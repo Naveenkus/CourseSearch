@@ -2,10 +2,12 @@ package com.undoschool.course_search.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.undoschool.course_search.document.CourseDocument;
 import com.undoschool.course_search.repository.CourseRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataLoaderService {
 
+    @Autowired
     private final CourseRepository courseRepository;
 
     @PostConstruct
