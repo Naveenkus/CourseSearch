@@ -21,7 +21,6 @@ public class JacksonConfig {
                 new HttpHost("localhost", 9200)
         ).build();
 
-        // ✅ Register JavaTimeModule
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 

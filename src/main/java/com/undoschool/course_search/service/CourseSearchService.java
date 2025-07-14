@@ -24,7 +24,7 @@ public class CourseSearchService {
     @Autowired
     private final ElasticsearchClient elasticsearchClient;
 
-    public List<CourseDocument> searchCourses(SearchRequest request) throws Exception {
+    public com.undoschool.course_search.dto.SearchResponse searchCourses(SearchRequest request) throws Exception {
         List<Query> mustQueries = new ArrayList<>();
 
         if (request.getQ() != null && !request.getQ().isEmpty()){
@@ -50,10 +50,32 @@ public class CourseSearchService {
         if (request.getMinAge() != null || request.getMaxAge() != null){
             RangeQuery.Builder ageRange = new RangeQuery.Builder().field("minAge");
 
-            if (request.getMinAge() != null) ageRange.gte(JsonData.of(request.getMinAge()));
-            if (request.getMaxAge() != null) ageRange.lte(JsonData.of(request.getMaxAge()));
+            if (request.getMinAge() != null) {
+                mustQueries.add(RangeQuery.of(r -> r
+                        .field("maxAge")
+                        .gte(JsonData.of(request.getMinAge()))
+                )._toQuery());
+            }
 
-            mustQueries.add(ageRange.build()._toQuery());
+            if (request.getMaxAge() != null) {
+                mustQueries.add(RangeQuery.of(r -> r
+                        .field("minAge")
+                        .lte(JsonData.of(request.getMaxAge()))
+                )._toQuery());
+            }
+
+        }
+        if (request.getMinPrice() != null || request.getMaxPrice() != null) {
+            RangeQuery.Builder priceRange = new RangeQuery.Builder().field("price");
+
+            if (request.getMinPrice() != null) {
+                priceRange.gte(JsonData.of(request.getMinPrice()));
+            }
+            if (request.getMaxPrice() != null) {
+                priceRange.lte(JsonData.of(request.getMaxPrice()));
+            }
+
+            mustQueries.add(priceRange.build()._toQuery());
         }
 
         if (request.getStartDate() != null) {
@@ -88,8 +110,13 @@ public class CourseSearchService {
 
         SearchResponse<CourseDocument> response = elasticsearchClient.search(searchRequest, CourseDocument.class);
 
-        return response.hits().hits().stream()
+        List<CourseDocument> courses = response.hits().hits().stream()
                 .map(hit -> hit.source())
                 .toList();
+
+        return new com.undoschool.course_search.dto.SearchResponse(
+                response.hits().total().value(),
+                courses
+        );
     }
 }

@@ -2,7 +2,10 @@ package com.undoschool.course_search.controller;
 
 import com.undoschool.course_search.document.CourseDocument;
 import com.undoschool.course_search.dto.SearchRequest;
+import com.undoschool.course_search.dto.SearchResponse;
 import com.undoschool.course_search.service.CourseSearchService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseSearchController {
 
-    @Autowired
     private final CourseSearchService courseSearchService;
 
-    @GetMapping("/hello")
-    public String hello(){
-        return "Hello World";
-    }
     @GetMapping
-    public List<CourseDocument> searchCourse(@ModelAttribute SearchRequest request) throws Exception {
+    public SearchResponse searchCourse(@ModelAttribute SearchRequest request) throws Exception {
         return courseSearchService.searchCourses(request);
     }
 }

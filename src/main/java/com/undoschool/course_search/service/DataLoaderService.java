@@ -25,6 +25,7 @@ public class DataLoaderService {
     public void loadData() {
         try {
             ObjectMapper mapper =  new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
             InputStream inputStream = new ClassPathResource("sample-courses.json").getInputStream();
 
             List<CourseDocument> courses = mapper.readValue(inputStream, new TypeReference<>() {});
